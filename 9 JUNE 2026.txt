@@ -1,0 +1,74 @@
+Prerequisites:
+1.	MongoDB Server: You should have MongoDB Server installed on your Windows machine. If not, download and install it from the official MongoDB website.
+2.	MongoDB Compass: You should have MongoDB Compass installed. If not, download and install it from the official MongoDB website.
+Steps:
+1.	Create Data Directories:
+o	Create three separate directories to store the data for each MongoDB instance. For example: 
+	C:\data\db0
+	C:\data\db1
+	C:\data\db2
+2.	Start MongoDB Instances (Command Prompt):
+o	Open three separate Command Prompt windows (run as administrator is recommended).
+o	In each window, start a mongod instance with different ports and data directories:
+Bash
+# Window 1
+"C:\Program Files\MongoDB\Server\8.0\bin\mongod.exe" --replSet myReplSet --dbpath C:\data\db0 --port 27017 --bind_ip localhost
+
+# Window 2
+"C:\Program Files\MongoDB\Server\8.0\bin\mongod.exe" --replSet myReplSet --dbpath C:\data\db1 --port 27018 --bind_ip localhost
+
+# Window 3
+"C:\Program Files\MongoDB\Server\8.0\bin\mongod.exe" --replSet myReplSet --dbpath C:\data\db2 --port 27019 --bind_ip localhost
+o	Replace <version> with your MongoDB Server version.
+o	Important: All instances must have the same replSet name (myReplSet in this example).
+3.	Connect to MongoDB Compass:
+o	Open MongoDB Compass.
+o	Connect to the first instance (port 27017) using the connection string: mongodb://localhost:27017
+4.	Initialize Replica Set (MongoDB Compass):
+o	Once connected, open the MongoDB shell within Compass.
+o	Run the rs.initiate() command to create the replica set:
+JavaScript
+rs.initiate({
+    _id: "myReplSet",
+    members: [
+        { _id: 0, host: "localhost:27017" },
+        { _id: 1, host: "localhost:27018" },
+        { _id: 2, host: "localhost:27019" }
+    ]
+})
+5.	Verify Replica Set Status:
+o	In the MongoDB shell in Compass, run the rs.status() command to check the status of the replica set. You should see one primary and two secondaries.
+6.	Add More Members (Optional):
+o	If you need to add more members, you can use the rs.add() command in the MongoDB shell.
+Important Notes:
+•	Firewall: Ensure that your Windows Firewall allows connections to the ports you specified (27017, 27018, 27019).
+•	Security: For production environments, enable authentication and authorization.
+•	Single Machine Limitations: This setup is for learning and testing. In a production environment, you should distribute the replica set members across different physical machines for true high availability.
+•	MongoDB Configuration File (Optional): Instead of using command-line parameters, you can create a mongod.conf file for each instance and specify the replication settings there.
+Testing Replication:
+1.	Insert data into a collection on the primary.
+2.	Connect to one of the secondaries using MongoDB Compass (or the mongo shell).
+3.	Query the same collection on the secondary. You should see the data replicated from the primary.
+Set Up a Replica Set
+In this tutorial, we will convert standalone MongoDB instance to a replica set. To convert to replica set, following are the steps −
+•	Shutdown already running MongoDB server.
+•	
+•	Start the MongoDB server by specifying -- replSet option. Following is the basic syntax of --replSet −
+mongod --port "PORT" --dbpath "YOUR_DB_DATA_PATH" --replSet "REPLICA_SET_INSTANCE_NAME"
+Example
+mongod --port 27017 --dbpath "D:\set up\mongodb\data" --replSet rs0
+•	It will start a mongod instance with the name rs0, on port 27017.
+•	Now start the command prompt and connect to this mongod instance.
+•	In Mongo client, issue the command rs.initiate() to initiate a new replica set.
+•	To check the replica set configuration, issue the command rs.conf(). To check the status of replica set issue the command rs.status().
+Add Members to Replica Set
+To add members to replica set, start mongod instances on multiple machines. Now start a mongo client and issue a command rs.add().
+Syntax
+The basic syntax of rs.add() command is as follows −
+>rs.add(HOST_NAME:PORT)
+Example
+Suppose your mongod instance name is mongod1.net and it is running on port 27017. To add this instance to replica set, issue the command rs.add() in Mongo client.
+>rs.add("mongod1.net:27017")
+>
+You can add mongod instance to replica set only when you are connected to primary node. To check whether you are connected to primary or not, issue the command db.isMaster() in mongo client.
+
